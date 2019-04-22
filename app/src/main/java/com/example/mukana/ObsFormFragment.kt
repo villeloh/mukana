@@ -4,15 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.activityViewModel
+import com.airbnb.mvrx.fragmentViewModel
+import com.airbnb.mvrx.withState
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_obsform.*
 
-class ObsFormFragment : BaseMvRxFragment() {
+class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
-    private val viewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
+    // view models keep track of app state even if the fragment is destroyed
+    private val itemViewModel: ObsItemViewModel by fragmentViewModel(ObsItemViewModel::class)
+    private val listViewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -28,13 +33,32 @@ class ObsFormFragment : BaseMvRxFragment() {
 
     private fun onCancelButtonClick() {
 
+        // on cancel, clear the old values. some users might not prefer it, but hey, sucks to be them! :)
+        itemViewModel.resetState()
     }
 
     private fun onCreateButtonClick() {
 
+        withState(itemViewModel) {stateBirdObs -> {
 
-        // viewModel.addListItem()
+            listViewModel.addListItem(stateBirdObs) // auto-updates the listView
+        }}
     }
+
+    // i.e., a spinner item
+    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+
+        val rarityAsString = parent.getItemAtPosition(pos).toString()
+        // to deal with the lack of underscore in the user-visible text. not ideal, but i's the simplest way i can think of.
+        val rarity = if (rarityAsString == "EXTREMELY RARE") Rarity.EXTREMELY_RARE else Rarity.valueOf(rarityAsString)
+
+        itemViewModel.updateState(ObsItemViewModel.Updating.RARITY, rarity)
+    } // onItemSelected
+
+    override fun onNothingSelected(parent: AdapterView<*>) {
+        // Another interface callback
+    }
+
 
     private fun hideFloatingActionButton() {
 
@@ -51,14 +75,19 @@ class ObsFormFragment : BaseMvRxFragment() {
 
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             raritySpinner.adapter = adapter
+            raritySpinner.onItemSelectedListener = this
         }
     } // initRaritySpinner
+
+    private fun setInitialValues() {
+        //TODO: set the initial field values from the itemViewModel state
+    }
 
     // called automatically on viewmodel state updates by MvRx
     override fun invalidate() {
 
-        // it should NOT be called in this fragment, as the form should exist until
-        // it's manually exited. but MvRx requires that I override it anyway.
+        // logically, it should NOT be called in this fragment, as the form should persist until
+        // it's manually exited. not sure how to prevent it... will have to see how this works.
     }
 
 } // ObsFormFragment

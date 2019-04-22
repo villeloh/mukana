@@ -2,7 +2,6 @@ package com.example.mukana
 
 import android.location.Location
 import com.airbnb.mvrx.MvRxState
-import java.sql.Timestamp
 
 enum class Rarity(val text: String) {
     COMMON("common"),
@@ -11,9 +10,9 @@ enum class Rarity(val text: String) {
 }
 
 data class BirdObservation(
-    val species: String,
-    val rarity: Rarity,
-    val notes: String,
-    val geoLocation: Location,
-    val timeStamp: Long
-)
+    val species: String = "",
+    val rarity: Rarity = Rarity.COMMON,
+    val notes: String = "",
+    val geoLocation: Location = Location(""),
+    val timeStamp: Long = 0L
+) : MvRxState
