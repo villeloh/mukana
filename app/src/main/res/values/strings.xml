@@ -1,4 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mukana</string>
     <string name="action_settings">Settings</string>
+    <string name="formTitle">Create new observation</string>
+    <string name="speciesText">Species</string>
+    <string name="rarityText">Rarity</string>
+    <string name="notesText">Notes</string>
+    <string name="notesHint">(optional) Some notes about the bird</string>
+    <string name="speciesHint">(req.) The name of the bird</string>
+    <string name="cancelBtnText">Cancel</string>
+    <string name="createBtnText">Create</string>
+    <string-array name="rarity_array">
+        <item>COMMON</item>
+        <item>RARE</item>
+        <item>EXTREMELY RARE</item>
+    </string-array>
 </resources>

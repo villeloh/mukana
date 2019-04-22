@@ -1,10 +1,12 @@
 package com.example.mukana
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
 import com.airbnb.mvrx.BaseMvRxActivity
 import com.google.android.gms.location.*
 
@@ -23,14 +25,19 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
+        //TODO: adding the fragment erases the permission acceptance dialog... fix asap!
         addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
 
         geoLocator = GeoLocator()
         geoLocator.startLocationUpdates()
+
+        floatingActionButton.setOnClickListener {
+
+            val formFragment = ObsFormFragment()
+            replaceFragment(formFragment, R.id.fragment_holder)
+           /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show() */
+        }
     } // onCreate
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -80,12 +87,22 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
     companion object {
 
         @JvmStatic
+        private var permissionsGranted = false
+        private const val ALL_PERMISSIONS = 1
+        @JvmStatic
+        private val PERMISSIONS = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.INTERNET)
+
+        @JvmStatic
         private val LOCATION_REQUEST = LocationRequest.create()?.apply {
             interval = 10000
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-    }
+
+    } // companion object
 
     override fun onPause() {
         super.onPause()
@@ -96,6 +113,65 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
         super.onResume()
         /* if (permissionsGranted) */ geoLocator.startLocationUpdates()
     }
+
+    private fun handlePermissions() {
+
+        if (hasPermissions()) {
+
+            permissionsGranted = true
+        } else {
+
+            permissionsGranted = false
+            requestPermissions()
+        }
+    } // handlePermissions
+
+    private fun hasPermissions(): Boolean {
+        for (permission in PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun requestPermissions() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) ||
+            ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.INTERNET) || ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.ACCESS_NETWORK_STATE)) {
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+            // TODO: do this stuff...
+        } else {
+            // we can request the permission.
+            ActivityCompat.requestPermissions(this, PERMISSIONS, ALL_PERMISSIONS)
+        }
+    } // requestPermissions
+
+    // callback of requestPermissions
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+
+        when (requestCode) {
+
+            ALL_PERMISSIONS -> {
+                // If the request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+
+                    handlePermissions()
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission
+                }
+            }
+            else -> {
+                // Ignore all other requests.
+            }
+        } // when
+    } // onRequestPermissionsResult
 
     // it's only here because it's too much trouble to deal with the context issues...
     //TODO: try to move it into its own class
