@@ -19,7 +19,7 @@ import com.airbnb.mvrx.activityViewModel
  */
 class ObsListFragment : BaseMvRxFragment() {
 
-    private val tempList = listOf<BirdObservation>(
+    private val tempList = listOf(
         BirdObservation("lintu",
             Rarity.COMMON, "note",
             Location(""),
@@ -60,7 +60,7 @@ class ObsListFragment : BaseMvRxFragment() {
             }
         }
         return view
-    }
+    } // onCreateView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -100,5 +100,6 @@ class ObsListFragment : BaseMvRxFragment() {
                     putInt(ARG_COLUMN_COUNT, columnCount)
                 }
             }
-    } // companion
-}
+    } // companion object
+
+} // ObsListFragment

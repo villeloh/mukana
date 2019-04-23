@@ -17,19 +17,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteractionListener {
 
     private val listFragment: ObsListFragment = ObsListFragment()
-    private lateinit var geoLocator: GeoLocator
-    private lateinit var lastKnownLocation: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        //TODO: adding the fragment erases the permission acceptance dialog... fix asap!
-        addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
+        if (hasPermissions()) {
 
-        geoLocator = GeoLocator()
-        geoLocator.startLocationUpdates()
+            addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
+        } else {
+            requestPermissions()
+        }
 
         floatingActionButton.setOnClickListener {
 
@@ -58,73 +57,17 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
 
     override fun onListFragmentInteraction(item: BirdObservation) {
 
-
     }
-
-/*
-    private fun setMainView() {
-
-        val context = ComponentContext(this)
-
-        val button = ButtonContainer.create(context)
-            .text("huu")
-            .build()
-
-        val lithoRecyclerView = RecyclerCollectionComponent.create(context)
-            .disablePTR(true) // pull to refresh
-            .section(ObsListSection.create(SectionContext(context)).build())
-            .build()
-
-        val components: Component = Column.create(context)
-            .child(button)
-            .child(lithoRecyclerView)
-            .build()
-
-        val lithoView = LithoView.create(context, components)
-        setContentView(lithoView)
-    } // setMainView */
 
     companion object {
 
-        @JvmStatic
-        private var permissionsGranted = false
         private const val ALL_PERMISSIONS = 1
         @JvmStatic
         private val PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.INTERNET)
-
-        @JvmStatic
-        private val LOCATION_REQUEST = LocationRequest.create()?.apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
     } // companion object
-
-    override fun onPause() {
-        super.onPause()
-        geoLocator.stopLocationUpdates()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        /* if (permissionsGranted) */ geoLocator.startLocationUpdates()
-    }
-
-    private fun handlePermissions() {
-
-        if (hasPermissions()) {
-
-            permissionsGranted = true
-        } else {
-
-            permissionsGranted = false
-            requestPermissions()
-        }
-    } // handlePermissions
 
     private fun hasPermissions(): Boolean {
         for (permission in PERMISSIONS) {
@@ -133,7 +76,7 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
             }
         }
         return true
-    }
+    } // hasPermissions
 
     private fun requestPermissions() {
 
@@ -161,7 +104,7 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
                 // If the request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
-                    handlePermissions()
+                    addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission
@@ -172,47 +115,6 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
             }
         } // when
     } // onRequestPermissionsResult
-
-    // it's only here because it's too much trouble to deal with the context issues...
-    //TODO: try to move it into its own class
-    inner class GeoLocator {
-
-        private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this@MainActivity)
-
-        private val locationCallback = object : LocationCallback() {
-
-            override fun onLocationResult(locationResult: LocationResult?) {
-
-                locationResult ?: return
-
-                // there should only ever be one result
-                val loc = locationResult.locations[0]
-                val lat = loc.latitude.toString().substring(0, 5)
-                val lng = loc.longitude.toString().substring(0, 5)
-
-                lastKnownLocation = "$lat, $lng"
-                Log.d("VITTU", lastKnownLocation)
-            } // onLocationResult
-        } // locationCallback
-
-        fun startLocationUpdates() {
-
-            // TODO: add the SettingsRequest stuffs here
-
-            try {
-                fusedLocationClient.requestLocationUpdates(LOCATION_REQUEST,
-                    locationCallback,
-                    null /* Looper */)
-            } catch (e: SecurityException) {
-                // TODO: handle exception...
-            }
-        } // startLocationUpdates
-
-        fun stopLocationUpdates() {
-
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-        }
-    } // GeoLocator
 
 } // MainActivity
 

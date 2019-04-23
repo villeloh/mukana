@@ -1,6 +1,7 @@
 package com.example.mukana
 
 import android.app.Application
+import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -27,6 +28,9 @@ fun BaseMvRxActivity.addFragment(fragment: Fragment, containerId: Int){
 fun BaseMvRxActivity.replaceFragment(fragment: Fragment, containerId: Int) {
     supportFragmentManager.inTransaction { replace(containerId, fragment) }
 }
+
+// to silence kotlin's complaint about assigning String to Editable
+fun String.toEditable(): Editable =  Editable.Factory.getInstance().newEditable(this)
 
 // for logging when developing. not sure why it complains about unused parameter
 fun Any.log(msg: String) {
