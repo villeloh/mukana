@@ -24,6 +24,17 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == "com.android.support" || requested.group == "androidx") {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion "26.+"
+            }
+        }
+    }
+}
+
 dependencies {
 
     implementation 'com.google.android.gms:play-services-location:16.0.0'

@@ -17,8 +17,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteractionListener {
 
-    private val listFragment: ObsListFragment = ObsListFragment()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -26,6 +24,7 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
 
         if (hasPermissions()) {
 
+            val listFragment = ObsListFragment()
             addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
         } else {
             requestPermissions()
@@ -107,6 +106,7 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
                 // If the request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
+                    val listFragment = ObsListFragment()
                     addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
                 } else {
                     // permission denied, boo! Disable the

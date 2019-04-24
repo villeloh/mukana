@@ -22,13 +22,23 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_main"/>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
+    <FrameLayout
+            android:id="@+id/fabFrameLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="8dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_input_add" android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:backgroundTint="@color/colorPrimaryDark"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+    >
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                app:srcCompat="@android:drawable/ic_input_add" android:layout_marginEnd="8dp"
+                app:backgroundTint="@color/colorPrimaryDark"
+        />
+    </FrameLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

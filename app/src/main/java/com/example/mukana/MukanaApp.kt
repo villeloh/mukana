@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.airbnb.mvrx.BaseMvRxActivity
+import com.airbnb.mvrx.BaseMvRxFragment
 
 class MukanaApp : Application() {
 
@@ -30,6 +31,10 @@ fun BaseMvRxActivity.replaceFragment(fragment: Fragment, containerId: Int) {
     supportFragmentManager.inTransaction { replace(containerId, fragment) }
 }
 
+fun BaseMvRxFragment.replaceFragment(fragment: Fragment, containerId: Int) {
+    activity!!.supportFragmentManager.inTransaction { replace(containerId, fragment) }
+}
+
 // to silence kotlin's complaint about assigning a String to an Editable
 fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
@@ -37,7 +42,7 @@ fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(t
 // I'm sure something similar exists already, but it was easier to make this than to google it.
 fun String.truncate(newLength: Int) : String {
 
-    if (newLength <= this.length) return this
+    if (newLength >= this.length) return this
 
     return this.substring(0, newLength)
 }
@@ -45,7 +50,13 @@ fun String.truncate(newLength: Int) : String {
 // helper for ui representation
 fun Location.formattedCoordString(): String {
 
-    return "lat.: ${this.latitude.toString().substring(0,5)}, lng.: ${this.longitude.toString().substring(0,5)}"
+    val latString = this.latitude.toString()
+    val lngString = this.longitude.toString()
+
+    val latdecims = latString.length
+    val lngDecims = lngString.length
+
+    return "lat.: ${latString.substring(0, latdecims-4)}, lng.: ${lngString.substring(0, lngDecims-4)}"
 }
 
 // for logging when developing. not sure why it complains about unused parameter

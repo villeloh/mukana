@@ -1,5 +1,7 @@
 package com.example.mukana.view
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,15 +9,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.activityViewModel
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
+import com.airbnb.mvrx.*
+import com.example.mukana.*
 import com.example.mukana.R
-import com.example.mukana.TextValidator
-import com.example.mukana.log
 import com.example.mukana.model.Rarity
-import com.example.mukana.toEditable
 import com.example.mukana.viewmodel.ObsItemViewModel
 import com.example.mukana.viewmodel.ObsListViewModel
 import com.google.android.gms.location.LocationCallback
@@ -32,11 +29,17 @@ private const val MAX_LENGTH_NOTES = 100
 
 class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
-    private val geoLocator: GeoLocator = GeoLocator()
+    private lateinit var geoLocator: GeoLocator
 
     // view models keep track of app state even if the fragment is destroyed
     private val itemViewModel: ObsItemViewModel by fragmentViewModel(ObsItemViewModel::class)
-    private val listViewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
+    private val listViewModel: ObsListViewModel by existingViewModel(ObsListViewModel::class) // i.e., the one created by the list view
+
+    private var speciesValid= false
+    private var notesValid = false
+
+    private val formValid: Boolean
+        get() = speciesValid && notesValid // other values are always valid
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -45,6 +48,8 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        geoLocator = GeoLocator(context!!) // the context should exist now
 
         hideFloatingActionButton()
         initRaritySpinner()
@@ -70,22 +75,30 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
     private fun onCancelButtonClick() {
 
         // on cancel, clear the old values.
-        // I imagine this would be the preferred behaviour for most users.
+        // I imagine this would be the preferred behaviour of most users.
         itemViewModel.resetState()
+        showFloatingActionButton()
+
+        returnToListView()
     }
 
     private fun onCreateButtonClick() {
 
-        // geoloc gets auto-updated, and species, rarity and notes are updated by ui actions,
-        // so we only need to get the timestamp here
-        itemViewModel.updateState(ObsItemViewModel.Accessing.TIMESTAMP, getCurrentTime())
+        if (!formValid) return
+        //TODO: show a warning about invalid fields
+
+        // geoloc gets auto-updated, and species, rarity and notes are updated by other ui actions,
+        // so we only need to set the timestamp here
+        itemViewModel.setTimeStamp(getCurrentTime())
 
         // could write a function for it, but this is the only place where it'd get called
-        withState(itemViewModel) {stateBirdObs -> {
+        withState(itemViewModel) {
 
-            listViewModel.addItem(stateBirdObs) // auto-updates the listView
-        }}
-        //TODO: navigate back to the main list view
+            listViewModel.addItem(it) // auto-updates the listView
+        }
+        showFloatingActionButton()
+
+        returnToListView()
     } // onCreateButtonClick
 
     // i.e., a spinner item
@@ -95,17 +108,26 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         // to deal with the lack of underscore in the user-visible text. not ideal, but i's the simplest way i can think of.
         val rarity = if (rarityAsString == "EXTREMELY RARE") Rarity.EXTREMELY_RARE else Rarity.valueOf(rarityAsString)
 
-        itemViewModel.updateState(ObsItemViewModel.Accessing.RARITY, rarity)
+        itemViewModel.setRarity(rarity)
     } // onItemSelected
 
     override fun onNothingSelected(parent: AdapterView<*>) {
         // no need to do anything
     }
 
+    // the floating action button was losing its styles when navigating back
+    // to the list view, so I wrapped it in a FrameLayout as an ad-hoc solution.
+    // although not a good habit to get into, the performance hit is minuscule
+    // compared to the saved development time.
     private fun hideFloatingActionButton() {
 
         // it's part of the activity (not sure if this is kosher, but it seems to work)
-        activity!!.floatingActionButton.hide()
+        activity!!.fabFrameLayout.visibility = View.GONE
+    }
+
+    private fun showFloatingActionButton() {
+
+        activity!!.fabFrameLayout.visibility = View.VISIBLE
     }
 
     private fun initRaritySpinner() {
@@ -141,6 +163,15 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         }} // withState
     } // setInitialFieldValues
 
+    // there is a new, fancy way of doing navigation (NavHost, NavController, etc), but I thought
+    // I'd rather focus on the requested features. navigation is very simple to handle with just the
+    // floating action button and the cancel button in this small app.
+    private fun returnToListView() {
+
+        val listFragment = ObsListFragment()
+        replaceFragment(listFragment, R.id.fragment_holder) // move back to the main list view
+    }
+
     // called automatically on view model state updates by MvRx
     override fun invalidate() {
 
@@ -169,7 +200,8 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                     //TODO: show a warning about text length
                 } else {
 
-                    itemViewModel.updateState(ObsItemViewModel.Accessing.SPECIES, text)
+                    speciesValid = true
+                    itemViewModel.setSpecies(text)
                 }
             } // validate
         } // speciesValidator
@@ -182,7 +214,8 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                     //TODO: show a warning about text length
                 } else {
 
-                    itemViewModel.updateState(ObsItemViewModel.Accessing.NOTES, text)
+                    notesValid = true
+                    itemViewModel.setNotes(text)
                 }
             }
         }
@@ -195,12 +228,14 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
     private fun getCurrentTime(): Long {
 
-        return System.currentTimeMillis()
+        val huu = System.currentTimeMillis()
+        log("timestamp in getCurrentTime: " + huu)
+        return huu
     }
 
     // we only need geolocation in this class, so I've included it as an inner class
-    // for convenience (due to context issues).
-    inner class GeoLocator {
+    // for convenience.
+    inner class GeoLocator(context: Context) {
 
         private val locationRequest= LocationRequest.create()?.apply {
             interval = 10000
@@ -210,7 +245,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
         // the complaint about the uncertain context is puzzling; I don't think the Activity can
         // disappear before the Fragment that it contains, so this should be safe
-        private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
+        private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
         private val locationCallback = object : LocationCallback() {
 
@@ -220,13 +255,13 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
                 // there should only ever be one result
                 val loc = locationResult.locations[0]
-                itemViewModel.updateState(ObsItemViewModel.Accessing.GEOLOC, loc)
+                itemViewModel.setGeoLoc(loc)
 
                 val lat = loc.latitude.toString().substring(0, 5)
                 val lng = loc.longitude.toString().substring(0, 5)
 
                 val lastKnownLocation = "lat.: $lat, lng.: $lng"
-                log(lastKnownLocation)
+                // log(lastKnownLocation)
             } // onLocationResult
         } // locationCallback
 
