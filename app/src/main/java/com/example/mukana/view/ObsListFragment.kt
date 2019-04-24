@@ -1,4 +1,4 @@
-package com.example.mukana
+package com.example.mukana.view
 
 import android.content.Context
 import android.location.Location
@@ -11,6 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.activityViewModel
+import com.example.mukana.ObsListRecyclerViewAdapter
+import com.example.mukana.R
+import com.example.mukana.model.BirdObservation
+import com.example.mukana.model.BirdObservationList
+import com.example.mukana.model.Rarity
+import com.example.mukana.viewmodel.ObsListViewModel
 
 /**
  * A fragment representing a list of Items.
@@ -20,14 +26,16 @@ import com.airbnb.mvrx.activityViewModel
 class ObsListFragment : BaseMvRxFragment() {
 
     private val tempList = listOf(
-        BirdObservation("lintu",
-            Rarity.COMMON, "note",
+        BirdObservation(
+            "lintu",
+            Rarity.COMMON,
+            "note",
             Location(""),
             System.currentTimeMillis()
-        ))
-    private val birdObsList = BirdObservationList(tempList)
+        )
+    )
 
-    val viewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
+    private val viewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
 
     // TODO: Customize parameters
     private var columnCount = 1
@@ -36,6 +44,8 @@ class ObsListFragment : BaseMvRxFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.addItems(tempList)
 
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
@@ -55,10 +65,10 @@ class ObsListFragment : BaseMvRxFragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = ObsListRecyclerViewAdapter(birdObsList, listener)
+                adapter = ObsListRecyclerViewAdapter(viewModel.list(), listener)
                 setHasFixedSize(true)
             }
-        }
+        } // if
         return view
     } // onCreateView
 

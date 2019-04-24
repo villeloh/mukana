@@ -1,6 +1,7 @@
 package com.example.mukana
 
 import android.app.Application
+import android.location.Location
 import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -29,8 +30,23 @@ fun BaseMvRxActivity.replaceFragment(fragment: Fragment, containerId: Int) {
     supportFragmentManager.inTransaction { replace(containerId, fragment) }
 }
 
-// to silence kotlin's complaint about assigning String to Editable
-fun String.toEditable(): Editable =  Editable.Factory.getInstance().newEditable(this)
+// to silence kotlin's complaint about assigning a String to an Editable
+fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
+// helper function for obtaining shortened notes strings (to show in the ui).
+// I'm sure something similar exists already, but it was easier to make this than to google it.
+fun String.truncate(newLength: Int) : String {
+
+    if (newLength <= this.length) return this
+
+    return this.substring(0, newLength)
+}
+
+// helper for ui representation
+fun Location.formattedCoordString(): String {
+
+    return "lat.: ${this.latitude.toString().substring(0,5)}, lng.: ${this.longitude.toString().substring(0,5)}"
+}
 
 // for logging when developing. not sure why it complains about unused parameter
 fun Any.log(msg: String) {

@@ -1,8 +1,6 @@
-package com.example.mukana
+package com.example.mukana.view
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +11,13 @@ import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.fragmentViewModel
 import com.airbnb.mvrx.withState
+import com.example.mukana.R
+import com.example.mukana.TextValidator
+import com.example.mukana.log
+import com.example.mukana.model.Rarity
+import com.example.mukana.toEditable
+import com.example.mukana.viewmodel.ObsItemViewModel
+import com.example.mukana.viewmodel.ObsListViewModel
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -20,10 +25,14 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_obsform.*
 
+
+private const val MIN_LENGTH_SPECIES = 1
+private const val MAX_LENGTH_SPECIES = 20
+private const val MAX_LENGTH_NOTES = 100
+
 class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
     private val geoLocator: GeoLocator = GeoLocator()
-    private var lastKnownLocation: String = "lat.: N/A, lng.: N/A"
 
     // view models keep track of app state even if the fragment is destroyed
     private val itemViewModel: ObsItemViewModel by fragmentViewModel(ObsItemViewModel::class)
@@ -53,20 +62,31 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         geoLocator.startLocationUpdates()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        geoLocator.stopLocationUpdates() // for certainty
+    }
+
     private fun onCancelButtonClick() {
 
         // on cancel, clear the old values.
-        // I imagine this would be the preferred behaviour of most users.
+        // I imagine this would be the preferred behaviour for most users.
         itemViewModel.resetState()
     }
 
     private fun onCreateButtonClick() {
 
+        // geoloc gets auto-updated, and species, rarity and notes are updated by ui actions,
+        // so we only need to get the timestamp here
+        itemViewModel.updateState(ObsItemViewModel.Accessing.TIMESTAMP, getCurrentTime())
+
+        // could write a function for it, but this is the only place where it'd get called
         withState(itemViewModel) {stateBirdObs -> {
 
-            listViewModel.addListItem(stateBirdObs) // auto-updates the listView
+            listViewModel.addItem(stateBirdObs) // auto-updates the listView
         }}
-    }
+        //TODO: navigate back to the main list view
+    } // onCreateButtonClick
 
     // i.e., a spinner item
     override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
@@ -75,7 +95,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         // to deal with the lack of underscore in the user-visible text. not ideal, but i's the simplest way i can think of.
         val rarity = if (rarityAsString == "EXTREMELY RARE") Rarity.EXTREMELY_RARE else Rarity.valueOf(rarityAsString)
 
-        itemViewModel.updateState(ObsItemViewModel.Updating.RARITY, rarity)
+        itemViewModel.updateState(ObsItemViewModel.Accessing.RARITY, rarity)
     } // onItemSelected
 
     override fun onNothingSelected(parent: AdapterView<*>) {
@@ -102,14 +122,14 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         }
     } // initRaritySpinner
 
-    // restore the state of the form fields from the viewmodel (assuming the fields have been dirtied)
+    // restore the state of the form fields from the view model (assuming the fields have been dirtied)
     private fun setInitialFieldValues() {
 
         withState(itemViewModel) { stateBirdObs -> {
 
             if (speciesET.hint.isBlank()) {
 
-                speciesET.text = stateBirdObs.species.toEditable()
+                speciesET.text = stateBirdObs.UI.species.toEditable()
             }
 
             raritySpinner.setSelection(stateBirdObs.rarity.ordinal)
@@ -121,7 +141,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         }} // withState
     } // setInitialFieldValues
 
-    // called automatically on viewmodel state updates by MvRx
+    // called automatically on view model state updates by MvRx
     override fun invalidate() {
 
         // logically, it should NOT be called in this fragment, as the form should persist until
@@ -145,21 +165,38 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
             override fun validate(textView: TextView, text: String) {
 
-            }
-        }
+                if (text.length < MIN_LENGTH_SPECIES || text.length > MAX_LENGTH_SPECIES) {
+                    //TODO: show a warning about text length
+                } else {
+
+                    itemViewModel.updateState(ObsItemViewModel.Accessing.SPECIES, text)
+                }
+            } // validate
+        } // speciesValidator
 
         val notesValidator = object : TextValidator(notesET) {
 
             override fun validate(textView: TextView, text: String) {
 
+                if (text.length > MAX_LENGTH_NOTES) {
+                    //TODO: show a warning about text length
+                } else {
+
+                    itemViewModel.updateState(ObsItemViewModel.Accessing.NOTES, text)
+                }
             }
         }
 
         speciesET.addTextChangedListener(speciesValidator)
         notesET.addTextChangedListener(notesValidator)
 
-        // there should be a clear method as well, but I'd think they're destroyed with the fragment (after some time, anyway)
+        // there should be a clearListeners method as well, but I think they're destroyed with the fragment (after some time, anyway)
     } // setListeners
+
+    private fun getCurrentTime(): Long {
+
+        return System.currentTimeMillis()
+    }
 
     // we only need geolocation in this class, so I've included it as an inner class
     // for convenience (due to context issues).
@@ -183,10 +220,12 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
                 // there should only ever be one result
                 val loc = locationResult.locations[0]
+                itemViewModel.updateState(ObsItemViewModel.Accessing.GEOLOC, loc)
+
                 val lat = loc.latitude.toString().substring(0, 5)
                 val lng = loc.longitude.toString().substring(0, 5)
 
-                lastKnownLocation = "lat.: $lat, lng.: $lng"
+                val lastKnownLocation = "lat.: $lat, lng.: $lng"
                 log(lastKnownLocation)
             } // onLocationResult
         } // locationCallback

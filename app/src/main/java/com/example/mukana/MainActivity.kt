@@ -3,12 +3,13 @@ package com.example.mukana
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
 import com.airbnb.mvrx.BaseMvRxActivity
-import com.google.android.gms.location.*
+import com.example.mukana.model.BirdObservation
+import com.example.mukana.view.ObsFormFragment
+import com.example.mukana.view.ObsListFragment
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -55,6 +56,8 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
         }
     }
 
+    // called on clicking the list items. could be used for entering
+    // a detail / edit view.
     override fun onListFragmentInteraction(item: BirdObservation) {
 
     }

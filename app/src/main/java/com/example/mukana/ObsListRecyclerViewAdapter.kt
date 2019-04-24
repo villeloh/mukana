@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.mukana.model.BirdObservation
+import com.example.mukana.model.BirdObservationList
 
-import com.example.mukana.ObsListFragment.OnListFragmentInteractionListener
+import com.example.mukana.view.ObsListFragment.OnListFragmentInteractionListener
 
 import kotlinx.android.synthetic.main.fragment_obslistitem.view.*
-import java.sql.Date
 
 /**
  * [RecyclerView.Adapter] that can display an item and makes a call to the
@@ -42,12 +43,13 @@ class ObsListRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val item = obsList.items[position]
-        holder.rarityTextView.text = item.rarity.text
-        holder.speciesTextView.text = item.species
-        holder.dateTextView.text = item.timeStamp.toString()
-        holder.notesTextView.text = item.notes
-        holder.geoLocTextView.text = "huu" // item.geoLocation.toString()
-
+        holder.apply {
+            rarityTextView.text = item.UI.rarity
+            speciesTextView.text = item.UI.species
+            dateTextView.text = item.UI.timeStamp
+            notesTextView.text = item.UI.notes
+            geoLocTextView.text = item.UI.geoLoc
+        }
         with(holder.view) {
             tag = item
             setOnClickListener(onClickListener)

@@ -1,14 +1,12 @@
-package com.example.mukana
+package com.example.mukana.viewmodel
 
 import android.location.Location
+import com.example.mukana.model.BirdObservation
+import com.example.mukana.model.Rarity
 
 class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewModel<BirdObservation>(initialState) {
 
-    init {
-
-    }
-
-    enum class Updating {
+    enum class Accessing {
         SPECIES,
         RARITY,
         NOTES,
@@ -17,14 +15,14 @@ class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewMode
     }
 
     // this way, we only need one method.
-    fun updateState(type: Updating, value: Any) {
+    fun updateState(type: Accessing, value: Any) {
 
         when (type) {
-            Updating.SPECIES -> setState { copy(species = value as String) }
-            Updating.RARITY -> setState { copy(rarity = value as Rarity) }
-            Updating.NOTES -> setState { copy(notes = value as String) }
-            Updating.GEOLOC -> setState { copy(geoLocation = value as Location) }
-            Updating.TIMESTAMP -> setState { copy(timeStamp = value as Long) }
+            Accessing.SPECIES -> setState { copy(species = value as String) }
+            Accessing.RARITY -> setState { copy(rarity = value as Rarity) }
+            Accessing.NOTES -> setState { copy(notes = value as String) }
+            Accessing.GEOLOC -> setState { copy(geoLocation = value as Location) }
+            Accessing.TIMESTAMP -> setState { copy(timeStamp = value as Long) }
         }
     } // updateState
 
