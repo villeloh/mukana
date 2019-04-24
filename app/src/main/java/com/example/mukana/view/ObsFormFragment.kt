@@ -21,6 +21,8 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_obsform.*
+import java.sql.Time
+import java.sql.Timestamp
 
 
 private const val MIN_LENGTH_SPECIES = 1
@@ -90,6 +92,10 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         // geoloc gets auto-updated, and species, rarity and notes are updated by other ui actions,
         // so we only need to set the timestamp here
         itemViewModel.setTimeStamp(getCurrentTime())
+        // we need to sleep for a while to remember our async-set time value.
+        // there are ways to deal properly with this in MvRx, but as they're rather elaborate, I'd rather do this and
+        // focus on the requested features.
+        Thread.sleep(10)
 
         // could write a function for it, but this is the only place where it'd get called
         withState(itemViewModel) {
@@ -179,7 +185,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         // it's manually exited. not sure how to prevent it... will have to see how this works.
     }
 
-    // there's a fancy new way of setting these (data binding), but i've no time to use *all* new features.
+    // there's a fancy new way of setting these (data binding), but i've no time to use *all* the new features.
     private fun setListeners() {
 
         cancelButton.setOnClickListener {
@@ -218,7 +224,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                     itemViewModel.setNotes(text)
                 }
             }
-        }
+        } // notesValidator
 
         speciesET.addTextChangedListener(speciesValidator)
         notesET.addTextChangedListener(notesValidator)
@@ -228,23 +234,22 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
     private fun getCurrentTime(): Long {
 
-        val huu = System.currentTimeMillis()
-        log("timestamp in getCurrentTime: " + huu)
-        return huu
+        return System.currentTimeMillis()
     }
 
-    // we only need geolocation in this class, so I've included it as an inner class
+    // we only need geolocation in this class, so I included it as an inner class
     // for convenience.
     inner class GeoLocator(context: Context) {
 
-        private val locationRequest= LocationRequest.create()?.apply {
+        private val locationRequest = LocationRequest.create()?.apply {
+
+            // setting too short of a value leads to battery drain; otoh, if the value is too long,
+            // a quickly entered observation will have no location value
             interval = 10000
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        // the complaint about the uncertain context is puzzling; I don't think the Activity can
-        // disappear before the Fragment that it contains, so this should be safe
         private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
         private val locationCallback = object : LocationCallback() {
@@ -256,12 +261,12 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                 // there should only ever be one result
                 val loc = locationResult.locations[0]
                 itemViewModel.setGeoLoc(loc)
-
+/*
                 val lat = loc.latitude.toString().substring(0, 5)
                 val lng = loc.longitude.toString().substring(0, 5)
 
                 val lastKnownLocation = "lat.: $lat, lng.: $lng"
-                // log(lastKnownLocation)
+                log(lastKnownLocation) */
             } // onLocationResult
         } // locationCallback
 

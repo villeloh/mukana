@@ -21,6 +21,7 @@ import com.example.mukana.model.BirdObservationList
 import com.example.mukana.model.Rarity
 import com.example.mukana.viewmodel.ObsListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import java.sql.Timestamp
 
 /**
  * A fragment representing a list of Items.

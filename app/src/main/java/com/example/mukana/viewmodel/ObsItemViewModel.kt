@@ -4,6 +4,7 @@ import android.location.Location
 import com.example.mukana.log
 import com.example.mukana.model.BirdObservation
 import com.example.mukana.model.Rarity
+import java.sql.Timestamp
 
 class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewModel<BirdObservation>(initialState) {
 
@@ -21,10 +22,7 @@ class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewMode
 
     fun setGeoLoc(value: Location) = setState { copy(geoLocation = value) }
 
-    fun setTimeStamp(value: Long) {
-        log("timeStamp in setter: " + value)
-        setState { copy(timeStamp = value) }
-    }
+    fun setTimeStamp(value: Long) = setState { copy(timeStamp = value) }
 
     fun resetState() {
 
@@ -34,7 +32,7 @@ class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewMode
             rarity = initialState.rarity,
             notes = initialState.notes,
             geoLocation = initialState.geoLocation,
-            timeStamp = 0L)
+            timeStamp = initialState.timeStamp)
         }
     } // resetState
 

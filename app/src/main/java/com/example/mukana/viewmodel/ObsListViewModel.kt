@@ -9,7 +9,7 @@ class ObsListViewModel(private val initialState: BirdObservationList) : MvRxView
     // this has to be done here and not in BirdObservationList itself, since the underlying list object is immutable.
     // NOTE: rn this is not being used, as the timestamp sorting is 'automatic': time keeps passing,
     // so when new observations are being created, they're always inserted in the correct order.
-    fun sortByTimeStamp() {
+    private fun sortByTimeStamp() {
 
         withState {
 
@@ -22,23 +22,26 @@ class ObsListViewModel(private val initialState: BirdObservationList) : MvRxView
     // https://github.com/airbnb/MvRx/wiki#updating-state
     fun addItems(newItems: List<BirdObservation>) {
 
-        log("adding item list: " + newItems.toString())
+        // log("adding item list: " + newItems.toString())
         setState { copy(items = items + newItems) }
     }
 
     fun addItem(item: BirdObservation) {
 
-        log("adding birdObs: " + item.toString())
-        setState { copy(items = items + item) }
-    }
+        withState {
+            val newList = it.items.toMutableList()
+            newList.add(0, item) // add it to the start of the list
+            setState { copy(items = newList) }
+        }
+    } // addItem
 
-    // for clearing all list items. (not user atm)
+    // for clearing all list items. (not used atm)
     fun resetList() {
 
         setState { copy(items = emptyList()) }
     }
 
-    // we need access to the inner list in order to give it to the RecyclerViewAdapter
+    // not used atm
     fun list(): BirdObservationList {
         var list = BirdObservationList()
         withState {

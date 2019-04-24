@@ -5,6 +5,7 @@ import android.util.Log
 import com.airbnb.mvrx.MvRxState
 import com.example.mukana.formattedCoordString
 import com.example.mukana.truncate
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -19,7 +20,7 @@ data class BirdObservation(
     val rarity: Rarity = Rarity.COMMON,
     val notes: String = "",
     val geoLocation: Location = Location(""),
-    val timeStamp: Long = 0
+    val timeStamp: Long = 0L
 ) : MvRxState {
 
     // a namespace for getting UI-formatted values of the internal fields.
@@ -61,7 +62,6 @@ interface UINamespace {
 
 private fun longToFormattedDateString(timeStamp: Long): String {
 
-    Log.d("JUUH", "time stamp: " + timeStamp.toString())
     val formatter = SimpleDateFormat("dd.MM. yyyy", Locale.ENGLISH)
     return formatter.format(timeStamp)
 }

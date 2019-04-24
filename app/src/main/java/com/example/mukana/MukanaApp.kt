@@ -47,17 +47,20 @@ fun String.truncate(newLength: Int) : String {
     return this.substring(0, newLength)
 }
 
-// helper for ui representation
+// helper for ui representation.
 fun Location.formattedCoordString(): String {
+
+    // i.e., it is the default, empty Location object
+    if (this.provider == "") return "Location: N/A"
 
     val latString = this.latitude.toString()
     val lngString = this.longitude.toString()
 
-    val latdecims = latString.length
+    val latDecims = latString.length
     val lngDecims = lngString.length
 
-    return "lat.: ${latString.substring(0, latdecims-4)}, lng.: ${lngString.substring(0, lngDecims-4)}"
-}
+    return "lat.: ${latString.substring(0, latDecims-4)}, lng.: ${lngString.substring(0, lngDecims-4)}"
+} // Location.formattedCoordString
 
 // for logging when developing. not sure why it complains about unused parameter
 fun Any.log(msg: String) {
