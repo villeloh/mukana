@@ -65,10 +65,6 @@ class ObsListRecyclerViewAdapter(
         val dateTextView: TextView = view.date
         val notesTextView: TextView = view.notes
         val geoLocTextView: TextView = view.geoloc
-
-        override fun toString(): String {
-            return super.toString() // + " '" + mContentView.text + "'"
-        }
     } // ViewHolder
 
 } // ObsListRecyclerViewAdapter

@@ -1,11 +1,9 @@
 package com.example.mukana.model
 
 import android.location.Location
-import android.util.Log
 import com.airbnb.mvrx.MvRxState
 import com.example.mukana.formattedCoordString
 import com.example.mukana.truncate
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 

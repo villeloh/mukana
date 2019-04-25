@@ -1,6 +1,5 @@
 package com.example.mukana.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,9 +20,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_obsform.*
-import java.sql.Time
-import java.sql.Timestamp
-
 
 private const val MIN_LENGTH_SPECIES = 1
 private const val MAX_LENGTH_SPECIES = 20
@@ -37,7 +33,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
     private val itemViewModel: ObsItemViewModel by fragmentViewModel(ObsItemViewModel::class)
     private val listViewModel: ObsListViewModel by existingViewModel(ObsListViewModel::class) // i.e., the one created by the list view
 
-    private var speciesValid= false
+    private var speciesValid = false
     private var notesValid = false
 
     private val formValid: Boolean

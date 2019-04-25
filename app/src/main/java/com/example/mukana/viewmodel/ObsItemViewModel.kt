@@ -25,7 +25,6 @@ class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewMode
     fun setTimeStamp(value: Long) = setState { copy(timeStamp = value) }
 
     fun resetState() {
-
         // i'm sure there's a better way to do this, but it works
         setState { copy(
             species = initialState.species,

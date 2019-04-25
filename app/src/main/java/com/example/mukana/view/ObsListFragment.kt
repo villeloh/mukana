@@ -30,7 +30,8 @@ import java.sql.Timestamp
  */
 class ObsListFragment : BaseMvRxFragment() {
 
-    private val tempList = listOf(
+    // for testing
+  /*  private val tempList = listOf(
         BirdObservation(
             "lintu",
             Rarity.COMMON,
@@ -45,11 +46,10 @@ class ObsListFragment : BaseMvRxFragment() {
             Location(""),
             System.currentTimeMillis()
         )
-    )
+    ) */
 
     private val viewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
 
-    // TODO: Customize parameters
     private var columnCount = 1
 
     private var listener: OnListFragmentInteractionListener? = null
@@ -110,6 +110,7 @@ class ObsListFragment : BaseMvRxFragment() {
 
     }
 
+    // for communication with MainActivity (not being used atm)
     interface OnListFragmentInteractionListener {
 
         fun onListFragmentInteraction(item: BirdObservation)

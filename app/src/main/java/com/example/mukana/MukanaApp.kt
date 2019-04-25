@@ -18,7 +18,7 @@ class MukanaApp : Application() {
 
 // EXTENSION FUNCTIONS
 
-// simplify the API for manipulating fragments
+// to simplify the API for manipulating fragments
 private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
     beginTransaction().func().addToBackStack(null).commit()
 }

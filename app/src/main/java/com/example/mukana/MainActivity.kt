@@ -13,7 +13,10 @@ import com.example.mukana.view.ObsListFragment
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-
+/**
+ * Bird list app for CGI.
+ * @author Ville Lohkovuori (2019)
+ * */
 
 class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteractionListener {
 
