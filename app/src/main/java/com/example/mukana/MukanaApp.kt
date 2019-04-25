@@ -1,7 +1,6 @@
 package com.example.mukana
 
 import android.app.Application
-import android.location.Location
 import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,12 +8,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.airbnb.mvrx.BaseMvRxActivity
 import com.airbnb.mvrx.BaseMvRxFragment
-
+import com.example.mukana.model.Coords
 class MukanaApp : Application() {
 
-    // did some setup here for a library, but it's deleted now.
-    // perhaps move the extensions elsewhere?
-}
+} // MukanaApp
 
 // EXTENSION FUNCTIONS
 
@@ -48,16 +45,14 @@ fun String.truncate(newLength: Int) : String {
 }
 
 // helper for ui representation.
-fun Location.formattedCoordString(): String {
+fun Coords.formattedUIString(): String {
 
-    // i.e., it is the default, empty Location object
-    if (this.provider == "") return "Location: N/A"
-
-    val latString = this.latitude.toString()
-    val lngString = this.longitude.toString()
+    val latString = this.lat.toString()
+    val lngString = this.lng.toString()
 
     val latDecims = latString.length
     val lngDecims = lngString.length
+    log("latDecims: " + latString)
 
     return "lat.: ${latString.substring(0, latDecims-4)}, lng.: ${lngString.substring(0, lngDecims-4)}"
 } // Location.formattedCoordString

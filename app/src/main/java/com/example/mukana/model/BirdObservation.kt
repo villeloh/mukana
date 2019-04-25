@@ -1,8 +1,11 @@
 package com.example.mukana.model
 
-import android.location.Location
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.airbnb.mvrx.MvRxState
-import com.example.mukana.formattedCoordString
+import com.example.mukana.formattedUIString
 import com.example.mukana.truncate
 import java.text.SimpleDateFormat
 import java.util.*
@@ -13,50 +16,41 @@ enum class Rarity(val text: String) {
     EXTREMELY_RARE("extremely rare")
 }
 
+// these will be stored in the local Room database & used by view models as well.
+@Entity(tableName = "bird_obs")
 data class BirdObservation(
-    val species: String = "",
-    val rarity: Rarity = Rarity.COMMON,
-    val notes: String = "",
-    val geoLocation: Location = Location(""),
-    val timeStamp: Long = 0L
-) : MvRxState {
+    @ColumnInfo(name = "species") val species: String = "",
+    @ColumnInfo(name = "rarity") val rarity: Rarity = Rarity.COMMON,
+    @ColumnInfo(name = "notes") val notes: String = "",
+    @Embedded val geoLocation: Coords = Coords(0.1234567,0.1234567),
+    @PrimaryKey val timeStamp: Long = 0L
+) : MvRxState
 
-    // a namespace for getting UI-formatted values of the internal fields.
-    // NOTE: technically, the view model should be responsible for this logic.
-    // however, since the BirdObservations are used for rendering the main list view
-    // as well as for keeping form state, it makes sense to have the formatting in the BO class itself.
-    val UI = object : UINamespace {
+fun valueToUIString(value: Any, type: Accessing): String {
 
-        val bo = this@BirdObservation
-
-        override val species: String
-            get() = bo.species
-
-        override val rarity: String
-            get() = "( ${bo.rarity.text} )"
-
-        override val notes: String
-            get() = bo.notes.truncate(20) // custom helper method
-
-        override val geoLoc: String
-            get() = bo.geoLocation.formattedCoordString() // helper method
-
-        override val timeStamp: String
-            get() = longToFormattedDateString(bo.timeStamp)
-    } // UI
-
-} // BirdObservation
-
-// in order to get a publicly accessible object namespace, we need this redundant interface.
-// first time I've ever been disappointed in Kotlin.
-interface UINamespace {
-
-    val species: String
-    val rarity: String
-    val notes: String
-    val geoLoc: String
-    val timeStamp: String
+    return when(type) {
+        Accessing.SPECIES -> value as String
+        Accessing.RARITY -> (value as Rarity).text
+        Accessing.GEOLOC -> (value as Coords).formattedUIString()
+        Accessing.NOTES -> (value as String).truncate(20)
+        Accessing.TIMESTAMP -> longToFormattedDateString(value as Long)
+    }
 }
+
+enum class Accessing {
+    SPECIES,
+    RARITY,
+    NOTES,
+    GEOLOC,
+    TIMESTAMP
+}
+
+// for storing the location coordinates in the Room database
+// (Room really seems to hate complex objects).
+data class Coords(
+    @ColumnInfo(name = "lat") val lat: Double,
+    @ColumnInfo(name = "lng") val lng: Double
+)
 
 private fun longToFormattedDateString(timeStamp: Long): String {
 

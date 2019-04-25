@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.mukana.model.Accessing
 import com.example.mukana.model.BirdObservation
 import com.example.mukana.model.BirdObservationList
+import com.example.mukana.model.valueToUIString
 
 import com.example.mukana.view.ObsListFragment.OnListFragmentInteractionListener
 
@@ -44,11 +46,11 @@ class ObsListRecyclerViewAdapter(
 
         val item = obsList.items[position]
         holder.apply {
-            rarityTextView.text = item.UI.rarity
-            speciesTextView.text = item.UI.species
-            dateTextView.text = item.UI.timeStamp
-            notesTextView.text = item.UI.notes
-            geoLocTextView.text = item.UI.geoLoc
+            rarityTextView.text = valueToUIString(item.rarity, Accessing.RARITY)
+            speciesTextView.text = valueToUIString(item.species, Accessing.SPECIES) // for consistency (it could be the plain value)
+            dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
+            notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
+            geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
         }
         with(holder.view) {
             tag = item

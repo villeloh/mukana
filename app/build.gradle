@@ -22,6 +22,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/atomicfu.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+    }
 }
 
 configurations.all {
@@ -42,6 +55,8 @@ dependencies {
     // MvRx
     implementation 'com.airbnb.android:mvrx:1.0.0'
 
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.0'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -53,4 +68,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'androidx.room:room-runtime:2.0.0'
+    kapt 'androidx.room:room-compiler:2.0.0'
 }

@@ -1,8 +1,6 @@
 package com.example.mukana.view
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
@@ -17,11 +16,7 @@ import com.example.mukana.ObsListRecyclerViewAdapter
 import com.example.mukana.R
 import com.example.mukana.log
 import com.example.mukana.model.BirdObservation
-import com.example.mukana.model.BirdObservationList
-import com.example.mukana.model.Rarity
 import com.example.mukana.viewmodel.ObsListViewModel
-import kotlinx.android.synthetic.main.activity_main.*
-import java.sql.Timestamp
 
 /**
  * A fragment representing a list of Items.
@@ -29,24 +24,6 @@ import java.sql.Timestamp
  * [ObsListFragment.OnListFragmentInteractionListener] interface.
  */
 class ObsListFragment : BaseMvRxFragment() {
-
-    // for testing
-  /*  private val tempList = listOf(
-        BirdObservation(
-            "lintu",
-            Rarity.COMMON,
-            "note",
-            Location(""),
-            System.currentTimeMillis()
-        ),
-        BirdObservation(
-            "lintu2",
-            Rarity.RARE,
-            "notezzzz",
-            Location(""),
-            System.currentTimeMillis()
-        )
-    ) */
 
     private val viewModel: ObsListViewModel by activityViewModel(ObsListViewModel::class)
 
@@ -57,13 +34,21 @@ class ObsListFragment : BaseMvRxFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // must be added here (instead of onCreateView), due to the async nature of the state management
-        // viewModel.addItems(tempList)
+        // this should only really happen when the app is first started;
+        // perhaps move the database operations into MainActivity instead?
+        viewModel.birdObsList.observe(this, object : Observer<List<BirdObservation>> {
+
+            override fun onChanged(list: List<BirdObservation>?) {
+
+                if (list == null) return
+                viewModel.updateFromDb(list)
+            }
+        })
 
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
-    }
+    } // onCreate
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,13 +75,21 @@ class ObsListFragment : BaseMvRxFragment() {
         return view
     } // onCreateView
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if (context is OnListFragmentInteractionListener) {
+
+            viewModel.initDatabase(context.applicationContext)
             listener = context
+
         } else {
-            throw RuntimeException("$context must implement OnListFragmentInteractionListener")
+            throw Exception("$context must implement OnListFragmentInteractionListener")
         }
     }
 

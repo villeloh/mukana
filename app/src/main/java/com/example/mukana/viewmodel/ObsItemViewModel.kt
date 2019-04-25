@@ -1,10 +1,9 @@
 package com.example.mukana.viewmodel
 
-import android.location.Location
 import com.example.mukana.log
 import com.example.mukana.model.BirdObservation
+import com.example.mukana.model.Coords
 import com.example.mukana.model.Rarity
-import java.sql.Timestamp
 
 class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewModel<BirdObservation>(initialState) {
 
@@ -20,7 +19,7 @@ class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewMode
 
     fun setNotes(value: String) = setState { copy(notes = value) }
 
-    fun setGeoLoc(value: Location) = setState { copy(geoLocation = value) }
+    fun setGeoLoc(value: Coords) = setState { copy(geoLocation = value) }
 
     fun setTimeStamp(value: Long) = setState { copy(timeStamp = value) }
 

@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.airbnb.mvrx.*
 import com.example.mukana.*
 import com.example.mukana.R
+import com.example.mukana.model.Coords
 import com.example.mukana.model.Rarity
 import com.example.mukana.viewmodel.ObsItemViewModel
 import com.example.mukana.viewmodel.ObsListViewModel
@@ -153,7 +154,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
             if (speciesET.hint.isBlank()) {
 
-                speciesET.text = stateBirdObs.UI.species.toEditable()
+                speciesET.text = stateBirdObs.species.toEditable()
             }
 
             raritySpinner.setSelection(stateBirdObs.rarity.ordinal)
@@ -256,7 +257,8 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
                 // there should only ever be one result
                 val loc = locationResult.locations[0]
-                itemViewModel.setGeoLoc(loc)
+                val coords = Coords(loc.latitude, loc.longitude)
+                itemViewModel.setGeoLoc(coords)
 /*
                 val lat = loc.latitude.toString().substring(0, 5)
                 val lng = loc.longitude.toString().substring(0, 5)
