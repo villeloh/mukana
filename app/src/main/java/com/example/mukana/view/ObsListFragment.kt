@@ -11,7 +11,6 @@ import androidx.lifecycle.Observer
 import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
-import com.example.mukana.ObsListRecyclerViewAdapter
 import com.example.mukana.R
 import com.example.mukana.model.BirdObservation
 import com.example.mukana.model.BirdObservationList

@@ -47,6 +47,14 @@ fun String.truncate(newLength: Int) : String {
     return this.substring(0, newLength)
 } // String.truncate
 
+// for removing newlines from Strings (for ui display purposes).
+// (I didn't extend String with it because I want to avoid any 'this' issues.)
+fun newLinesToSpaces(str: String): String {
+
+    val separator = System.getProperty("line.separator") ?: return str
+    return str.replace(separator, " ") // replace with a space so that we don't glue the words together
+}
+
 // for logging when developing. (not sure why it complains about unused parameter)
 fun Any.log(msg: String) {
 

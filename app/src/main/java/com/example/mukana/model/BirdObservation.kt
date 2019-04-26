@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.airbnb.mvrx.MvRxState
+import com.example.mukana.newLinesToSpaces
 import com.example.mukana.truncate
 import java.text.SimpleDateFormat
 import java.util.*
@@ -12,7 +13,7 @@ import java.util.*
 enum class Rarity(val text: String) {
     COMMON("common"),
     RARE("rare"),
-    EXTREMELY_RARE("extremely rare")
+    EXTREMELY_RARE("ext. rare")
 }
 
 // these will be stored in the local Room database & used by view models as well.
@@ -29,10 +30,10 @@ data class BirdObservation(
 fun valueToUIString(value: Any, type: Accessing): String {
 
     return when(type) {
-        Accessing.SPECIES -> value as String
-        Accessing.RARITY -> (value as Rarity).text
+        Accessing.SPECIES -> value as String // redundant, but it's good to be consistent in case there's future changes
+        Accessing.RARITY -> "( ${(value as Rarity).text} )"
         Accessing.GEOLOC -> (value as Coords).formattedUIString()
-        Accessing.NOTES -> (value as String).truncate(20)
+        Accessing.NOTES -> newLinesToSpaces((value as String).truncate(20)) // when shown in the list view, newlines are only a nuisance
         Accessing.TIMESTAMP -> longToFormattedDateString(value as Long)
     }
 }

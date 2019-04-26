@@ -1,10 +1,13 @@
-package com.example.mukana
+package com.example.mukana.view
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import com.example.mukana.R
+import com.example.mukana.log
 import com.example.mukana.model.Accessing
 import com.example.mukana.model.BirdObservation
 import com.example.mukana.model.BirdObservationList
@@ -47,11 +50,20 @@ class ObsListRecyclerViewAdapter(
         val item = obsList.items[position]
         
         holder.apply {
+            log("id: " + view.id.toString())
             rarityTextView.text = valueToUIString(item.rarity, Accessing.RARITY)
             speciesTextView.text = valueToUIString(item.species, Accessing.SPECIES) // for consistency (it could be the plain value)
             dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
             notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
             geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
+
+            val cardView = view.findViewById<CardView>(R.id.cardView)
+
+            if (position % 2 == 0) {
+
+                // for better visual flow, give every other card a different bg color
+                cardView.setBackgroundColor(cardView.resources.getColor(R.color.colorCardAlternate))
+            }
         }
         with(holder.view) {
             tag = item

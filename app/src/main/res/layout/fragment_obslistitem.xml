@@ -8,64 +8,110 @@
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/cardView"
             app:cardElevation="4dp"
             app:cardCornerRadius="4dp"
-            app:contentPadding="10dp"
-            app:cardBackgroundColor="#3C92B9"
-            android:layout_margin="10dp">
+            app:contentPadding="7dp"
+            app:cardBackgroundColor="@color/colorCardPrimary"
+            android:layout_margin="5dp">
         <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:stretchColumns="1">
+                android:stretchColumns="*">
             <TableRow
+                    android:weightSum="100"
+                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                 <TextView
+                        android:elevation="10dp"
+                        android:fontFamily="@font/brizel"
+                        app:fontFamily="@font/brizel"
+                        android:padding="3dp"
+                        android:background="@drawable/card_view_bg"
+                        android:layout_weight="33"
                         android:id="@+id/species"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
                         android:textAppearance="?attr/textAppearanceListItem"
-                        android:layout_column="0"/>
+                        android:layout_column="0"
+                        android:textAlignment="center"
+                        android:textSize="20sp"/>
                 <TextView
+                        android:elevation="10dp"
+                        android:fontFamily="@font/brizel"
+                        app:fontFamily="@font/brizel"
+                        android:padding="3dp"
+                        android:background="@drawable/card_view_bg"
+                        android:layout_weight="33"
                         android:id="@+id/rarity"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
                         android:textAppearance="?attr/textAppearanceListItem"
-                        android:layout_column="1"/>
+                        android:layout_column="1"
+                        android:textAlignment="center"
+                        android:textSize="20sp"/>
                 <TextView
+                        android:elevation="10dp"
+                        android:fontFamily="@font/brizel"
+                        app:fontFamily="@font/brizel"
+                        android:padding="3dp"
+                        android:background="@drawable/card_view_bg"
+                        android:layout_weight="33"
                         android:id="@+id/date"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
                         android:textAppearance="?attr/textAppearanceListItem"
-                        android:layout_column="2"/>
+                        android:layout_column="2"
+                        android:textAlignment="center"
+                        android:textSize="20sp"/>
             </TableRow>
             <TableRow
+                    android:weightSum="100"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                 <TextView
+                        android:elevation="10dp"
+                        android:fontFamily="@font/brizel"
+                        app:fontFamily="@font/brizel"
+                        android:padding="3dp"
+                        android:background="@drawable/card_view_bg"
+                        android:layout_weight="33"
                         android:id="@+id/notes"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
                         android:textAppearance="?attr/textAppearanceListItem"
-                        android:layout_column="0"/>
+                        android:layout_column="0"
+                        android:textAlignment="center"
+                        android:textSize="18sp"/>
                 <TextView
+                        android:padding="3dp"
+                        android:layout_weight="33"
                         android:id="@+id/filler"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
                         android:textAppearance="?attr/textAppearanceListItem"
                         android:layout_column="1"/>
                 <TextView
+                        android:elevation="10dp"
+                        android:fontFamily="@font/brizel"
+                        app:fontFamily="@font/brizel"
+                        android:padding="3dp"
+                        android:background="@drawable/card_view_bg"
+                        android:layout_weight="33"
                         android:id="@+id/geoloc"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="2dp"
                         android:textAppearance="?attr/textAppearanceListItem"
-                        android:layout_column="2"/>
+                        android:layout_column="2"
+                        android:textAlignment="center"
+                        android:textSize="20sp"/>
             </TableRow>
         </TableLayout>
     </androidx.cardview.widget.CardView>
