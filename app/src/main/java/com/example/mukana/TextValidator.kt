@@ -10,6 +10,7 @@ abstract class TextValidator(private val textView: TextView) : TextWatcher {
     abstract fun validate(textView: TextView, text: String)
 
     override fun afterTextChanged(s: Editable) {
+
         val text = textView.text.toString()
         validate(textView, text)
     }

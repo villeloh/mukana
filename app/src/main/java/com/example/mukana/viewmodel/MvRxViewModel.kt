@@ -1,6 +1,5 @@
 package com.example.mukana.viewmodel
 
-import androidx.lifecycle.AndroidViewModel
 import com.airbnb.mvrx.BaseMvRxViewModel
 import com.airbnb.mvrx.MvRxState
 import com.example.mukana.BuildConfig

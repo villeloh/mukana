@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.airbnb.mvrx.MvRxState
-import com.example.mukana.formattedUIString
 import com.example.mukana.truncate
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,10 +21,11 @@ data class BirdObservation(
     @ColumnInfo(name = "species") val species: String = "",
     @ColumnInfo(name = "rarity") val rarity: Rarity = Rarity.COMMON,
     @ColumnInfo(name = "notes") val notes: String = "",
-    @Embedded val geoLocation: Coords = Coords(0.1234567,0.1234567),
+    @Embedded val geoLocation: Coords = Coords(0.0,0.0), // NOTE: do not change these values, as it breaks the UI string formatting!
     @PrimaryKey val timeStamp: Long = 0L
 ) : MvRxState
 
+// not part of the class itself to avoid issues with the Room db.
 fun valueToUIString(value: Any, type: Accessing): String {
 
     return when(type) {
@@ -51,6 +51,22 @@ data class Coords(
     @ColumnInfo(name = "lat") val lat: Double,
     @ColumnInfo(name = "lng") val lng: Double
 )
+
+// helper for ui representation.
+private fun Coords.formattedUIString(): String {
+
+    val latString = this.lat.toString()
+    val lngString = this.lng.toString()
+
+    // i.e., it is the default, 'empty' Coords object.
+    // a crude check, but it works for everyone except for the rare, brave sailor somewhere near West Africa.
+    if (latString == "0.0" && lngString == "0.0") return "Location: N/A"
+
+    val latDecims = latString.length
+    val lngDecims = lngString.length
+
+    return "lat.: ${latString.substring(0, latDecims-4)}, lng.: ${lngString.substring(0, lngDecims-4)}"
+} // Coords.formattedUIString
 
 private fun longToFormattedDateString(timeStamp: Long): String {
 

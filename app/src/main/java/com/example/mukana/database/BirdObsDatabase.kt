@@ -7,9 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.mukana.model.BirdObservation
 
-// I lost literally 4 hours due to the db failing SILENTLY because I did not MANUALLY
-// increase the version number when changing the schema! -.- this one's on whoever made
-// this POS, so cut me some slack here, ehh?
 @Database(entities = [BirdObservation::class], version = 2, exportSchema = false)
 @TypeConverters(TypeConverterz::class)
 abstract class BirdObsDatabase : RoomDatabase() {

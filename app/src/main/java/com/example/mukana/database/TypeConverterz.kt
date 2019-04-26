@@ -4,8 +4,9 @@ import androidx.room.TypeConverter
 import com.example.mukana.model.Rarity
 
 // The Room database needs some help in persisting the Rarity-type objects.
-// The object name contains a 'z' because an 's' there seemed to cause some kind of
-// confusion with the identically named annotation.
+// (The object name contains a 'z' because an 's' there seemed to cause some kind of
+// confusion with the identically named annotation.)
+@Suppress("SpellCheckingInspection")
 object TypeConverterz {
 
     @TypeConverter @JvmStatic

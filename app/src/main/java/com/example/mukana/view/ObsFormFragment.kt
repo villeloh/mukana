@@ -22,9 +22,17 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_obsform.*
 
+/*
+* The form for entering new observations.
+*/
+
 private const val MIN_LENGTH_SPECIES = 1
 private const val MAX_LENGTH_SPECIES = 20
 private const val MAX_LENGTH_NOTES = 100
+
+private const val FORM_INVALID_GENERAL = "Form invalid!"
+private const val FORM_INVALID_SPECIES = " Please enter a species ($MIN_LENGTH_SPECIES - $MAX_LENGTH_SPECIES characters)."
+private const val FORM_INVALID_NOTES = " Max length exceeded! Please enter at max $MAX_LENGTH_NOTES characters."
 
 class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
@@ -35,7 +43,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
     private val listViewModel: ObsListViewModel by existingViewModel(ObsListViewModel::class) // i.e., the one created by the list view
 
     private var speciesValid = false
-    private var notesValid = false
+    private var notesValid = true // since they're optional
 
     private val formValid: Boolean
         get() = speciesValid && notesValid // other values are always valid
@@ -43,7 +51,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         return inflater.inflate(R.layout.fragment_obsform, container, false)
-    } // onCreateView
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -51,7 +59,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         geoLocator = GeoLocator(context!!) // the context should exist now
 
         hideFloatingActionButton()
-        initRaritySpinner()
+        initRaritySpinner(context!!)
         setInitialFieldValues() // note: must be called after initRaritySpinner
         setListeners()
     } // onActivityCreated
@@ -74,33 +82,40 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
     private fun onCancelButtonClick() {
 
         // on cancel, clear the old values.
-        // I imagine this would be the preferred behaviour of most users.
+        // (I imagine this is the preferred behaviour of most users.)
         itemViewModel.resetState()
         showFloatingActionButton()
-
         returnToListView()
-    }
+    } // onCancelButtonClick
 
     private fun onCreateButtonClick() {
 
-        if (!formValid) return
-        //TODO: show a warning about invalid fields
+        if (!formValid) {
+
+            val msgStart = FORM_INVALID_GENERAL
+            val speciesPart = if (!speciesValid) FORM_INVALID_SPECIES else " "
+            val notesPart = if (!notesValid) FORM_INVALID_NOTES else " "
+
+            toast("$msgStart$speciesPart$notesPart")
+            return
+        } // if
 
         // geoloc gets auto-updated, and species, rarity and notes are updated by other ui actions,
         // so we only need to set the timestamp here
         itemViewModel.setTimeStamp(getCurrentTime())
+
         // we need to sleep for a while to remember our async-set time value.
         // there are ways to deal properly with this in MvRx, but as they're rather elaborate, I'd rather do this and
         // focus on the requested features.
         Thread.sleep(10)
 
-        // could write a function for it, but this is the only place where it'd get called
+        // could write a function for this, but this is the only place where it'd get called
         withState(itemViewModel) {
 
-            listViewModel.addItem(it) // auto-updates the listView
+            listViewModel.addItem(it) // auto-updates the listView, and adds the item to the database as well
         }
-        showFloatingActionButton()
 
+        showFloatingActionButton()
         returnToListView()
     } // onCreateButtonClick
 
@@ -108,7 +123,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
     override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
 
         val rarityAsString = parent.getItemAtPosition(pos).toString()
-        // to deal with the lack of underscore in the user-visible text. not ideal, but i's the simplest way i can think of.
+        // to deal with the lack of underscore in the user-visible text. not ideal, but it's the simplest way i can think of.
         val rarity = if (rarityAsString == "EXTREMELY RARE") Rarity.EXTREMELY_RARE else Rarity.valueOf(rarityAsString)
 
         itemViewModel.setRarity(rarity)
@@ -116,6 +131,14 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>) {
         // no need to do anything
+    }
+
+    // there is a new, fancy way of doing navigation (NavHost, NavController, etc), but I thought
+    // I'd rather focus on the requested features. navigation is very simple in this small app.
+    private fun returnToListView() {
+
+        val listFragment = ObsListFragment()
+        replaceFragment(listFragment, R.id.fragment_holder)
     }
 
     // the floating action button was losing its styles when navigating back
@@ -133,10 +156,10 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         activity!!.fabFrameLayout.visibility = View.VISIBLE
     }
 
-    private fun initRaritySpinner() {
+    private fun initRaritySpinner(context: Context) {
 
         ArrayAdapter.createFromResource(
-            context!!, // there is always a context at this point; not sure why it needs this
+            context,
             R.array.rarity_array,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
@@ -152,35 +175,19 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
         withState(itemViewModel) { stateBirdObs -> {
 
-            if (speciesET.hint.isBlank()) {
+            if (speciesET.isDirty) {
 
                 speciesET.text = stateBirdObs.species.toEditable()
             }
 
             raritySpinner.setSelection(stateBirdObs.rarity.ordinal)
 
-            if (notesET.hint.isBlank()) {
+            if (notesET.isDirty) {
 
                 notesET.text = stateBirdObs.notes.toEditable()
             }
         }} // withState
     } // setInitialFieldValues
-
-    // there is a new, fancy way of doing navigation (NavHost, NavController, etc), but I thought
-    // I'd rather focus on the requested features. navigation is very simple to handle with just the
-    // floating action button and the cancel button in this small app.
-    private fun returnToListView() {
-
-        val listFragment = ObsListFragment()
-        replaceFragment(listFragment, R.id.fragment_holder) // move back to the main list view
-    }
-
-    // called automatically on view model state updates by MvRx
-    override fun invalidate() {
-
-        // logically, it should NOT be called in this fragment, as the form should persist until
-        // it's manually exited. not sure how to prevent it... will have to see how this works.
-    }
 
     // there's a fancy new way of setting these (data binding), but i've no time to use *all* the new features.
     private fun setListeners() {
@@ -199,13 +206,25 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
             override fun validate(textView: TextView, text: String) {
 
-                if (text.length < MIN_LENGTH_SPECIES || text.length > MAX_LENGTH_SPECIES) {
-                    //TODO: show a warning about text length
-                } else {
+                val length = text.length
+                when {
 
-                    speciesValid = true
-                    itemViewModel.setSpecies(text)
-                }
+                    length > MAX_LENGTH_SPECIES -> {
+
+                        speciesValid = false
+                        toast("Please enter max $MAX_LENGTH_SPECIES characters.")
+                        textView.text = text.truncate(MAX_LENGTH_SPECIES) // it's a little crude, but better than fiddling with isEnabled
+                    }
+                    length < MIN_LENGTH_SPECIES -> {
+
+                        speciesValid = false
+                        toast("Please enter at least $MIN_LENGTH_SPECIES character(s)")
+                    }
+                    else -> {
+                        speciesValid = true
+                        itemViewModel.setSpecies(text)
+                    }
+                } // when
             } // validate
         } // speciesValidator
 
@@ -214,7 +233,10 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
             override fun validate(textView: TextView, text: String) {
 
                 if (text.length > MAX_LENGTH_NOTES) {
-                    //TODO: show a warning about text length
+
+                    notesValid = false
+                    toast("Please do not exceed $MAX_LENGTH_NOTES characters.")
+                    textView.text = text.truncate(MAX_LENGTH_NOTES)
                 } else {
 
                     notesValid = true
@@ -234,8 +256,14 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         return System.currentTimeMillis()
     }
 
-    // we only need geolocation in this class, so I included it as an inner class
-    // for convenience.
+    // called automatically on view model state updates by MvRx
+    override fun invalidate() {
+
+        // logically, it should NOT be called in this fragment, as the form should persist until
+        // it's manually exited. it doesn't seem to be causing any issues though.
+    }
+
+    // we only need geolocation in this class, so I included it as an inner class for convenience.
     inner class GeoLocator(context: Context) {
 
         private val locationRequest = LocationRequest.create()?.apply {
@@ -245,7 +273,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
             interval = 10000
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        } // locationRequest
 
         private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -259,18 +287,10 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                 val loc = locationResult.locations[0]
                 val coords = Coords(loc.latitude, loc.longitude)
                 itemViewModel.setGeoLoc(coords)
-/*
-                val lat = loc.latitude.toString().substring(0, 5)
-                val lng = loc.longitude.toString().substring(0, 5)
-
-                val lastKnownLocation = "lat.: $lat, lng.: $lng"
-                log(lastKnownLocation) */
             } // onLocationResult
         } // locationCallback
 
         fun startLocationUpdates() {
-
-            // TODO: add the SettingsRequest stuffs here
 
             try {
                 fusedLocationClient.requestLocationUpdates(

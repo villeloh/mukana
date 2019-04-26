@@ -14,21 +14,22 @@ import com.example.mukana.view.ObsListFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
- * Bird list app for CGI.
- * @author Ville Lohkovuori (2019)
+ * A bird observation list app for CGI.
+ * @author Ville Lohkovuori (April 2019)
  * */
 
 class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         if (hasPermissions()) {
 
             val listFragment = ObsListFragment()
-            addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
+            addFragment(listFragment, R.id.fragment_holder) // extension method
         } else {
             requestPermissions()
         }
@@ -37,8 +38,6 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
 
             val formFragment = ObsFormFragment()
             replaceFragment(formFragment, R.id.fragment_holder)
-           /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show() */
         }
     } // onCreate
 
@@ -49,6 +48,7 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -56,17 +56,16 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
+    } // onOptionsItemSelected
 
     // called on clicking the list items. could be used for entering
     // a detail / edit view.
-    override fun onListFragmentInteraction(item: BirdObservation) {
-
-    }
+    override fun onListFragmentInteraction(item: BirdObservation) { }
 
     companion object {
 
         private const val ALL_PERMISSIONS = 1
+
         @JvmStatic
         private val PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -110,10 +109,9 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
                     val listFragment = ObsListFragment()
-                    addFragment(listFragment, R.id.fragment_holder) // extension method from MukanaApp.kt
+                    addFragment(listFragment, R.id.fragment_holder) // extension method
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission
+                    // permission denied. not sure what to do here...
                 }
             }
             else -> {
@@ -123,4 +121,3 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
     } // onRequestPermissionsResult
 
 } // MainActivity
-

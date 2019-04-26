@@ -10,12 +10,14 @@ import com.example.mukana.model.BirdObservation
 // purposes as well (switching out the whole backend if needed).
 class BirdObsRepository(private val birdObsDao: BirdObsDao) {
 
+    // auto-updates with new db entries... even though it's an immutable property
+    // and this is a one-time assignment. the logic could certainly be clearer here.
     val birdObsList: LiveData<List<BirdObservation>> = birdObsDao.getAll()
 
+    // not sure why it doesn't seem to use the suspend modifier
     @WorkerThread
     suspend fun insert(item: BirdObservation) {
 
-        log("in repo insert: " + item)
         birdObsDao.insert(item)
     }
 }
