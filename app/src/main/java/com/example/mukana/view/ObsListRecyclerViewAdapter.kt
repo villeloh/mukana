@@ -8,10 +8,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.example.mukana.R
 import com.example.mukana.log
-import com.example.mukana.model.Accessing
-import com.example.mukana.model.BirdObservation
-import com.example.mukana.model.BirdObservationList
-import com.example.mukana.model.valueToUIString
+import com.example.mukana.model.*
 import com.example.mukana.view.ObsListFragment.OnListFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_obslistitem.view.*
 
@@ -48,15 +45,25 @@ class ObsListRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val item = obsList.items[position]
+
+        val rarityBg = when(item.rarity) {
+
+            // i'm pretty sure there's a better way to do this, but ehh, it works
+            Rarity.COMMON -> holder.view.resources.getDrawable(R.drawable.card_view_item_bg_common)
+            Rarity.RARE -> holder.view.resources.getDrawable(R.drawable.card_view_item_bg_rare)
+            Rarity.EXTREMELY_RARE -> holder.view.resources.getDrawable(R.drawable.card_view_item_bg_extreme)
+        }
         
         holder.apply {
-            log("id: " + view.id.toString())
+
             rarityTextView.text = valueToUIString(item.rarity, Accessing.RARITY)
+            rarityTextView.background = rarityBg
             speciesTextView.text = valueToUIString(item.species, Accessing.SPECIES) // for consistency (it could be the plain value)
             dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
             notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
             geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
 
+            // can't find it otherwise for some reason
             val cardView = view.findViewById<CardView>(R.id.cardView)
 
             if (position % 2 == 0) {
@@ -64,7 +71,7 @@ class ObsListRecyclerViewAdapter(
                 // for better visual flow, give every other card a different bg color
                 cardView.setBackgroundColor(cardView.resources.getColor(R.color.colorCardAlternate))
             }
-        }
+        } // apply
         with(holder.view) {
             tag = item
             setOnClickListener(onClickListener)

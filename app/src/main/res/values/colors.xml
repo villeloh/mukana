@@ -5,4 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorCardPrimary">#7AAEC0</color>
     <color name="colorCardAlternate">#72AFFF</color>
+    <color name="colorFabBg">#FFAFFC</color>
+    <color name="colorFabIcon">#5470FF</color>
 </resources>

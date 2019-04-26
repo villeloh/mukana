@@ -31,12 +31,12 @@ fun valueToUIString(value: Any, type: Accessing): String {
 
     return when(type) {
         Accessing.SPECIES -> value as String // redundant, but it's good to be consistent in case there's future changes
-        Accessing.RARITY -> "( ${(value as Rarity).text} )"
+        Accessing.RARITY -> "* ${(value as Rarity).text} *"
         Accessing.GEOLOC -> (value as Coords).formattedUIString()
         Accessing.NOTES -> newLinesToSpaces((value as String).truncate(20)) // when shown in the list view, newlines are only a nuisance
         Accessing.TIMESTAMP -> longToFormattedDateString(value as Long)
     }
-}
+} // valueToUIString
 
 enum class Accessing {
     SPECIES,

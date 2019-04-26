@@ -3,8 +3,6 @@ package com.example.mukana
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.core.app.ActivityCompat
 import com.airbnb.mvrx.BaseMvRxActivity
 import com.example.mukana.model.BirdObservation
@@ -41,41 +39,12 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
         }
     } // onCreate
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    } // onOptionsItemSelected
-
-    // called on clicking the list items. could be used for entering
-    // a detail / edit view.
-    override fun onListFragmentInteraction(item: BirdObservation) { }
-
-    companion object {
-
-        private const val ALL_PERMISSIONS = 1
-
-        @JvmStatic
-        private val PERMISSIONS = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.INTERNET)
-    } // companion object
-
     private fun hasPermissions(): Boolean {
+
         for (permission in PERMISSIONS) {
+
             if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+
                 return false
             }
         }
@@ -87,8 +56,7 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) ||
             ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.INTERNET) || ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.ACCESS_NETWORK_STATE)) {
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Show an explanation to the user *asynchronously* -- don't block
             // this thread waiting for the user's response! After the user
             // sees the explanation, try again to request the permission.
@@ -119,5 +87,19 @@ class MainActivity : BaseMvRxActivity(), ObsListFragment.OnListFragmentInteracti
             }
         } // when
     } // onRequestPermissionsResult
+
+    // called on clicking the list items. could be used for entering
+    // a detail / edit view.
+    override fun onListFragmentInteraction(item: BirdObservation) { }
+
+    companion object {
+
+        private const val ALL_PERMISSIONS = 1
+
+        @JvmStatic
+        private val PERMISSIONS = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+    } // companion object
 
 } // MainActivity
