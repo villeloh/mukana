@@ -62,17 +62,17 @@ class ObsListRecyclerViewAdapter(
             dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
             notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
             geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
+        } // apply
+        with(holder.view) {
 
             // can't find it otherwise for some reason
-            val cardView = view.findViewById<CardView>(R.id.cardView)
+            val cardView = findViewById<CardView>(R.id.cardView)
 
             if (position % 2 == 0) {
 
                 // for better visual flow, give every other card a different bg color
                 cardView.setBackgroundColor(cardView.resources.getColor(R.color.colorCardAlternate))
             }
-        } // apply
-        with(holder.view) {
             tag = item
             setOnClickListener(onClickListener)
         }

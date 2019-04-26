@@ -56,7 +56,10 @@ class ObsListFragment : BaseMvRxFragment() {
 
                 list ?: return
 
-                listViewModel.replaceViewModelList(list)
+                // this call messes up the styling of the card view items (resets the bg color to default color).
+                // disabling it messes with the viewmodel state, but it doesn't seem to matter, with the way the db
+                // has been set up; everything still works correctly without this.
+                // listViewModel.replaceViewModelList(list)
 
                 // this little line cost me four hours of work. something is off about the combo
                 // of MvRx and LiveData; this operation should not be necessary.

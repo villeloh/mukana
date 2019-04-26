@@ -39,11 +39,13 @@ class ObsListViewModel(private val initialState: BirdObservationList) : MvRxView
         databaseBirdObsList = repository.birdObsList
     } // initDatabase
 
-    // https://github.com/airbnb/MvRx/wiki#updating-state
-    fun replaceViewModelList(list: List<BirdObservation>) {
+    // disabling for now; the logic is a bit hard to parse, but it seems unnecessary with
+    // the database handling state well enough, and calling this is causing some styling issues
+    // in the list view.
+   /* fun replaceViewModelList(list: List<BirdObservation>) {
 
         setState { copy(items = list) }
-    }
+    } */
 
     fun addItem(item: BirdObservation) {
 
