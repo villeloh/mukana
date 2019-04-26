@@ -18,7 +18,7 @@ import com.airbnb.mvrx.BaseMvRxFragment
 
 // to simplify the API for manipulating fragments
 private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
-    beginTransaction().func().addToBackStack(null).commit()
+    beginTransaction().func().commit()
 }
 
 fun BaseMvRxActivity.addFragment(fragment: Fragment, containerId: Int){
@@ -46,14 +46,6 @@ fun String.truncate(newLength: Int) : String {
 
     return this.substring(0, newLength)
 } // String.truncate
-
-// for removing newlines from Strings (for ui display purposes).
-// (I didn't extend String with it because I want to avoid any 'this' issues.)
-fun newLinesToSpaces(str: String): String {
-
-    val separator = System.getProperty("line.separator") ?: return str
-    return str.replace(separator, " ") // replace with a space so that we don't glue the words together
-}
 
 // for logging when developing. (not sure why it complains about unused parameter)
 fun Any.log(msg: String) {

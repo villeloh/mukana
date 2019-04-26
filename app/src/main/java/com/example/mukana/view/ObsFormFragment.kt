@@ -1,5 +1,6 @@
 package com.example.mukana.view
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,6 +22,10 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_obsform.*
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.provider.MediaStore
+
 
 /*
 * The form for entering new observations.
@@ -33,6 +38,8 @@ private const val MAX_LENGTH_NOTES = 100
 private const val FORM_INVALID_GENERAL = "Form invalid!"
 private const val FORM_INVALID_SPECIES = " Please enter a species ($MIN_LENGTH_SPECIES - $MAX_LENGTH_SPECIES characters)."
 private const val FORM_INVALID_NOTES = " Max length exceeded! Please enter at max $MAX_LENGTH_NOTES characters."
+
+private const val LOAD_IMAGE = 1
 
 class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
@@ -141,6 +148,38 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         replaceFragment(listFragment, R.id.fragment_holder)
     }
 
+    private fun onFormImageViewClick() {
+
+        val i = Intent(
+            Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+
+        startActivityForResult(i, LOAD_IMAGE)
+    } // onFormImageViewClick
+
+    // returning from the image picking activity
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+
+        if (requestCode != LOAD_IMAGE || resultCode != RESULT_OK || intent == null || activity == null) return
+
+        val selectedImage = intent.data
+
+        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+
+        val cursor = activity!!.contentResolver.query(selectedImage!!,
+            filePathColumn, null, null, null)
+
+        cursor!!.moveToFirst()
+
+        val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+        val picturePath = cursor.getString(columnIndex)
+        cursor.close()
+
+        itemViewModel.setImagePath(picturePath)
+        formImageView.setImageBitmap(BitmapFactory.decodeFile(picturePath))
+    } // onActivityResult
+
     // the floating action button was losing its styles when navigating back
     // to the list view, so I wrapped it in a FrameLayout as an ad-hoc solution.
     // although not a good habit to get into, the performance hit is minuscule
@@ -200,6 +239,11 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
         createButton.setOnClickListener {
 
             onCreateButtonClick()
+        }
+
+        formImageView.setOnClickListener {
+
+            onFormImageViewClick()
         }
 
         val speciesValidator = object : TextValidator(speciesET) {

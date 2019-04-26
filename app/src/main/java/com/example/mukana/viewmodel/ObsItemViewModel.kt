@@ -27,6 +27,8 @@ class ObsItemViewModel(private val initialState: BirdObservation) : MvRxViewMode
 
     fun setTimeStamp(value: Long) = setState { copy(timeStamp = value) }
 
+    fun setImagePath(value: String) = setState { copy(imagePath = value) }
+
     fun resetState() {
 
         setState { copy(

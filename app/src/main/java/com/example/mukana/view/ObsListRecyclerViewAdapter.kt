@@ -1,9 +1,11 @@
 package com.example.mukana.view
 
+import android.graphics.BitmapFactory
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.example.mukana.R
@@ -62,17 +64,24 @@ class ObsListRecyclerViewAdapter(
             dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
             notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
             geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
-        } // apply
-        with(holder.view) {
+            val imagePath = valueToUIString(item.imagePath, Accessing.IMAGE_PATH)
 
-            // can't find it otherwise for some reason
-            val cardView = findViewById<CardView>(R.id.cardView)
+            if (imagePath != "") {
+
+                imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
+                imageView.visibility = View.VISIBLE
+            }
 
             if (position % 2 == 0) {
 
                 // for better visual flow, give every other card a different bg color
-                cardView.setBackgroundColor(cardView.resources.getColor(R.color.colorCardAlternate))
+                cardView.setCardBackgroundColor(cardView.resources.getColor(R.color.colorCardAlternate))
+                // fun fact: if you call setBackgroundColor instead (as you well might), it removes your corner radius
+                // and you can't set it back programmatically (not easily at least; 'cardView.radius = x' has no effect).
             }
+        } // apply
+        with(holder.view) {
+
             tag = item
             setOnClickListener(onClickListener)
         }
@@ -93,6 +102,8 @@ class ObsListRecyclerViewAdapter(
         val dateTextView: TextView = view.date
         val notesTextView: TextView = view.notes
         val geoLocTextView: TextView = view.geoloc
+        val imageView: ImageView = view.imageView
+        val cardView: CardView = view.cardView
     } // ViewHolder
 
 } // ObsListRecyclerViewAdapter

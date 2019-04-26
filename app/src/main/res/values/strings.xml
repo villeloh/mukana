@@ -6,6 +6,7 @@
     <string name="speciesText">Species</string>
     <string name="rarityText">Rarity</string>
     <string name="notesText">Notes</string>
+    <string name="imageText">Image (tap field to add)</string>
     <string name="notesHint">(optional) Some notes about the bird</string>
     <string name="speciesHint">(req.) The name of the bird</string>
     <string name="cancelBtnText">Cancel</string>

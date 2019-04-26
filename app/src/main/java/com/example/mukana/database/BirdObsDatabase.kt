@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.mukana.model.BirdObservation
 
-@Database(entities = [BirdObservation::class], version = 2, exportSchema = false)
+@Database(entities = [BirdObservation::class], version = 3, exportSchema = false)
 @TypeConverters(TypeConverterz::class)
 abstract class BirdObsDatabase : RoomDatabase() {
 
