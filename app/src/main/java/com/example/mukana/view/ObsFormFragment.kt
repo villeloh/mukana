@@ -6,9 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.TextView
 import com.airbnb.mvrx.*
 import com.example.mukana.*
 import com.example.mukana.R
@@ -25,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_obsform.*
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.provider.MediaStore
+import android.widget.*
 
 
 /*
@@ -182,6 +180,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
         itemViewModel.setImagePath(picturePath)
         formImageView.setImageBitmap(BitmapFactory.decodeFile(picturePath))
+        formImageFrame.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT // it's neater to wrap the image tightly once it's been added
     } // onActivityResult
 
     // the floating action button was losing its styles when navigating back
@@ -245,7 +244,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
             onCreateButtonClick()
         }
 
-        formImageView.setOnClickListener {
+        formImageFrame.setOnClickListener {
 
             onFormImageViewClick()
         }

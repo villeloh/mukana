@@ -11,6 +11,7 @@
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:padding="8dp"
+                  android:gravity="center"
                   android:id="@+id/formHolder">
             <LinearLayout android:layout_width="match_parent"
                           android:layout_height="wrap_content"
@@ -116,12 +117,25 @@
                 android:id="@+id/imageTV"
                 android:layout_marginBottom="5dp"
                 android:textSize="21sp"/>
-        <ImageView
-                android:layout_marginBottom="10dp"
+        <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                app:srcCompat="@drawable/form_edit_text_background"
-                android:id="@+id/formImageView"/>
+                android:background="@drawable/form_edit_text_background"
+                android:layout_height="190dp"
+                android:layout_marginBottom="12dp"
+                android:paddingTop="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/formImageFrame">
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="170dp"
+                    android:scaleType="centerInside"
+                    android:adjustViewBounds="true"
+                    app:srcCompat="@drawable/form_image_view_bg"
+                    android:id="@+id/formImageView"/>
+        </FrameLayout>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
