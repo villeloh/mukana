@@ -8,4 +8,10 @@
     <color name="colorFabBg">#FFAFFC</color>
     <color name="colorFabIcon">#5470FF</color>
     <color name="colorImageInset">#59C0C0C0</color>
+    <color name="colorCardRarityCommon">#8CDAFF7F</color>
+    <color name="colorCardRarityRare">#8CFF9B28</color>
+    <color name="colorCardRarityExtreme">#8CFF6C5B</color>
+    <color name="colorCardBgBase">#59FFFFFF</color>
+    <color name="colorFormBoxOutline">@color/colorPrimaryDark</color>
+    <color name="colorFormFieldBg">#4DD8FFF6</color>
 </resources>

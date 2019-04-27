@@ -58,27 +58,33 @@ class ObsListRecyclerViewAdapter(
         
         holder.apply {
 
-            rarityTextView.text = valueToUIString(item.rarity, Accessing.RARITY)
-            rarityTextView.background = rarityBg
-            speciesTextView.text = valueToUIString(item.species, Accessing.SPECIES) // for consistency (it could be the plain value)
-            dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
-            notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
-            geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
-            val imagePath = valueToUIString(item.imagePath, Accessing.IMAGE_PATH)
-
-            if (imagePath != "") {
-
-                imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
-                imageView.visibility = View.VISIBLE
-            }
-
             if (position % 2 == 0) {
 
                 // for better visual flow, give every other card a different bg color
                 cardView.setCardBackgroundColor(cardView.resources.getColor(R.color.colorCardAlternate))
                 // fun fact: if you call setBackgroundColor instead (as you well might), it removes your corner radius
                 // and you can't set it back programmatically (not easily at least; 'cardView.radius = x' has no effect).
+
+                // NOTE: the colors seem to be lost on scrolling for some reason (I suspect it's because the RecyclerView
+                // recycles the views (duh)). I could store the background color directly in the dataclass items, but that
+                // solution seems way too heavy-handed (the image path is stored already, but
+                // arguably it's more about data than representation).
             }
+
+            rarityTextView.text = valueToUIString(item.rarity, Accessing.RARITY)
+            rarityTextView.background = rarityBg
+            speciesTextView.text = valueToUIString(item.species, Accessing.SPECIES) // for consistency (it could be the plain value)
+            dateTextView.text = valueToUIString(item.timeStamp, Accessing.TIMESTAMP)
+            notesTextView.text = valueToUIString(item.notes, Accessing.NOTES)
+            geoLocTextView.text = valueToUIString(item.geoLocation, Accessing.GEOLOC)
+
+            val imagePath = valueToUIString(item.imagePath, Accessing.IMAGE_PATH)
+
+            if (imagePath == "") return@apply
+            val bitMap = BitmapFactory.decodeFile(imagePath) ?: return@apply // it can be null if the image has been moved or deleted
+
+            imageView.setImageBitmap(bitMap)
+            imageView.visibility = View.VISIBLE
         } // apply
         with(holder.view) {
 

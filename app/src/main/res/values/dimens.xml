@@ -1,3 +1,9 @@
 <resources>
+    <!-- there are just too many dimensions to put in here...
+    in retrospect, I should have used custom xml resources for the most repetitive elements. -->
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="baseElevation">10dp</dimen>
+    <dimen name="cardSubItemBgRadius">4dp</dimen>
+    <dimen name="formSubItemBgRadius">4dp</dimen>
+    <dimen name="cardSubItemPadding">6dp</dimen>
 </resources>

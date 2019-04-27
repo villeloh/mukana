@@ -3,12 +3,14 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              android:id="@+id/mainHolder"
+              android:layout_marginBottom="10dp"
               android:orientation="vertical">
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/cardView"
-            app:cardElevation="8dp"
+            app:cardElevation="@dimen/baseElevation"
             app:cardCornerRadius="5dp"
             app:contentPadding="7dp"
             app:cardBackgroundColor="@color/colorCardPrimary"
@@ -28,10 +30,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                     <TextView
-                            android:elevation="10dp"
+                            android:elevation="@dimen/baseElevation"
                             android:fontFamily="@font/brizel"
                             app:fontFamily="@font/brizel"
-                            android:padding="6dp"
+                            android:padding="@dimen/cardSubItemPadding"
                             android:background="@drawable/card_view_item_bg_base"
                             android:layout_weight="1"
                             android:id="@+id/species"
@@ -43,10 +45,10 @@
                             android:textAlignment="center"
                             android:textSize="20sp"/>
                     <TextView
-                            android:elevation="10dp"
+                            android:elevation="@dimen/baseElevation"
                             android:fontFamily="@font/brizel"
                             app:fontFamily="@font/brizel"
-                            android:padding="6dp"
+                            android:padding="@dimen/cardSubItemPadding"
                             android:background="@drawable/card_view_item_bg_base"
                             android:layout_weight="1"
                             android:id="@+id/rarity"
@@ -58,10 +60,10 @@
                             android:textAlignment="center"
                             android:textSize="20sp"/>
                     <TextView
-                            android:elevation="10dp"
+                            android:elevation="@dimen/baseElevation"
                             android:fontFamily="@font/brizel"
                             app:fontFamily="@font/brizel"
-                            android:padding="6dp"
+                            android:padding="@dimen/cardSubItemPadding"
                             android:background="@drawable/card_view_item_bg_base"
                             android:layout_weight="1"
                             android:id="@+id/date"
@@ -77,10 +79,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                     <TextView
-                            android:elevation="10dp"
+                            android:elevation="@dimen/baseElevation"
                             android:fontFamily="@font/brizel"
                             app:fontFamily="@font/brizel"
-                            android:padding="6dp"
+                            android:padding="@dimen/cardSubItemPadding"
                             android:background="@drawable/card_view_item_bg_base"
                             android:id="@+id/notes"
                             android:layout_span="2"
@@ -92,10 +94,10 @@
                             android:textAlignment="center"
                             android:textSize="18sp"/>
                     <TextView
-                            android:elevation="10dp"
+                            android:elevation="@dimen/baseElevation"
                             android:fontFamily="@font/brizel"
                             app:fontFamily="@font/brizel"
-                            android:padding="6dp"
+                            android:padding="@dimen/cardSubItemPadding"
                             android:background="@drawable/card_view_item_bg_base"
                             android:id="@+id/geoloc"
                             android:layout_width="0dp"
@@ -104,13 +106,13 @@
                             android:textAppearance="?attr/textAppearanceListItem"
                             android:layout_column="2"
                             android:textAlignment="center"
-                            android:textSize="20sp"/>
+                            android:textSize="18sp"/>
                 </TableRow>
             </TableLayout>
             <FrameLayout
                     android:id="@+id/imageFrame"
                     android:layout_margin="4dp"
-                    android:elevation="10dp"
+                    android:elevation="@dimen/baseElevation"
                     android:background="@drawable/image_view_bg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">

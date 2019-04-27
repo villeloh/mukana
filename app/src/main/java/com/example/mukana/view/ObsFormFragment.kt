@@ -37,7 +37,10 @@ private const val MAX_LENGTH_NOTES = 100
 
 private const val FORM_INVALID_GENERAL = "Form invalid!"
 private const val FORM_INVALID_SPECIES = " Please enter a species ($MIN_LENGTH_SPECIES - $MAX_LENGTH_SPECIES characters)."
-private const val FORM_INVALID_NOTES = " Max length exceeded! Please enter at max $MAX_LENGTH_NOTES characters."
+private const val FORM_INVALID_NOTES = " Please do not exceed $MAX_LENGTH_NOTES characters." // note: the leading space is significant
+private const val SPECIES_OVER_MAX_LENGTH = "Please enter max $MAX_LENGTH_SPECIES characters."
+private const val SPECIES_UNDER_MIN_LENGTH = "Please enter at least $MIN_LENGTH_SPECIES character(s)"
+private const val NOTES_OVER_MAX_LENGTH = "Please do not exceed $MAX_LENGTH_NOTES characters."
 
 private const val LOAD_IMAGE = 1
 
@@ -150,6 +153,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
 
     private fun onFormImageViewClick() {
 
+        // picking an image from he phone's internal storage
         val i = Intent(
             Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         )
@@ -256,13 +260,13 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                     length > MAX_LENGTH_SPECIES -> {
 
                         speciesValid = false
-                        toast("Please enter max $MAX_LENGTH_SPECIES characters.")
+                        toast(SPECIES_OVER_MAX_LENGTH)
                         textView.text = text.truncate(MAX_LENGTH_SPECIES) // it's a little crude, but better than fiddling with isEnabled
                     }
                     length < MIN_LENGTH_SPECIES -> {
 
                         speciesValid = false
-                        toast("Please enter at least $MIN_LENGTH_SPECIES character(s)")
+                        toast(SPECIES_UNDER_MIN_LENGTH)
                     }
                     else -> {
                         speciesValid = true
@@ -279,7 +283,7 @@ class ObsFormFragment : BaseMvRxFragment(), AdapterView.OnItemSelectedListener {
                 if (text.length > MAX_LENGTH_NOTES) {
 
                     notesValid = false
-                    toast("Please do not exceed $MAX_LENGTH_NOTES characters.")
+                    toast(NOTES_OVER_MAX_LENGTH)
                     textView.text = text.truncate(MAX_LENGTH_NOTES)
                 } else {
 

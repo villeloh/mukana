@@ -26,7 +26,7 @@ data class BirdObservation(
     @PrimaryKey val timeStamp: Long = 0L
 ) : MvRxState
 
-// not part of the class itself to avoid issues with the Room db.
+// not part of the class itself to avoid any possible issues with the Room db.
 fun valueToUIString(value: Any, type: Accessing): String {
 
     return when(type) {
@@ -47,7 +47,7 @@ fun valueToUIString(value: Any, type: Accessing): String {
         }
         Accessing.TIMESTAMP -> longToFormattedDateString(value as Long)
         Accessing.IMAGE_PATH -> value as String
-    }
+    } // when
 } // valueToUIString
 
 enum class Rarity(val text: String) {
